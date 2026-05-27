@@ -1,0 +1,1 @@
+A fully responsive e-commerce style web application using HTML, CSS, and vanilla JavaScript. The application fetches product data from the DummyJSON API, displays detailed product information, and includes a dynamic search/filter feature for improved user experience. Designed with a modern custom UI without relying on any frontend frameworks or libraries.
