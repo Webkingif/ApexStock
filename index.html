@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ApexStock - Responsive Vanilla Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- Google Fonts & Lucide Icons -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap"
+    rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+
+<body>
+
+  <div class="app-container">
+
+    <!-- Mobile Header -->
+    <header class="mobile-header">
+      <div class="brand">
+        <div class="logo-box">
+          <i data-lucide="package"></i>
+        </div>
+        <span class="brand-name">ApexStock</span>
+      </div>
+      <button id="mobile-menu-toggle" aria-label="Toggle Menu">
+        <i data-lucide="menu"></i>
+      </button>
+    </header>
+
+    <!-- Sidebar Navigation -->
+    <aside id="sidebar" class="sidebar">
+      <div class="sidebar-header">
+        <div class="brand">
+          <div class="logo-box">
+            <i data-lucide="package"></i>
+          </div>
+          <div>
+            <span class="brand-name">ApexStock</span>
+            <span class="system-sub font-mono">System Engine</span>
+          </div>
+        </div>
+        <button id="sidebar-close-btn" class="mobile-only-btn" aria-label="Close sidebar">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+
+      <!-- Quick Metrics -->
+      <div class="metrics-pill">
+        <div class="metric-row">
+          <span>Managed Items:</span>
+          <span id="sidebar-total-count" class="font-mono font-bold text-accent">0</span>
+        </div>
+        <div id="low-stock-warning" class="metric-row warning hidden">
+          <span class="flex items-center gap-1"><i data-lucide="alert-triangle"></i> Low Stock:</span>
+          <span id="sidebar-low-stock-count" class="font-mono font-bold">0</span>
+        </div>
+        <div class="metric-row source">
+          <span>Source:</span>
+          <span id="sidebar-data-source" class="source-badge">Fetching...</span>
+        </div>
+      </div>
+
+      <!-- Main Navigation -->
+      <nav class="sidebar-nav">
+        <p class="menu-label font-mono">Navigation</p>
+        <button class="nav-tab active" data-tab="catalog">
+          <i data-lucide="shopping-bag"></i>
+          <span>Product Catalog</span>
+        </button>
+      </nav>
+
+      <!-- Category Filter list -->
+      <div class="sidebar-categories">
+        <p class="menu-label font-mono">Filter by Category</p>
+        <div id="category-filter-list" class="category-list">
+          <!-- Dynamically filled categories -->
+        </div>
+      </div>
+
+      <footer class="sidebar-footer">
+        <p>© 2026 ApexStock Inc.</p>
+      </footer>
+    </aside>
+
+    <!-- Main Workspace -->
+    <main class="main-content">
+
+      <!-- Top controls bar -->
+      <div class="search-section">
+        <div class="search-bar-wrap">
+          <i data-lucide="search" class="search-icon"></i>
+          <input type="text" id="search-input" placeholder="Search products by title, tag, brand or SKU..."
+            autocomplete="off">
+          <button id="clear-search-btn" class="clear-btn hidden" title="Clear query">
+            <i data-lucide="x"></i>
+          </button>
+        </div>
+
+        <div class="controls-actions">
+          <!-- Sort dropdown -->
+          <div class="sort-select-wrap">
+            <i data-lucide="arrow-up-down"></i>
+            <select id="sort-select">
+              <option value="featured">Featured Catalog</option>
+              <option value="price-asc">Price: Low to High</option>
+              <option value="price-desc">Price: High to Low</option>
+              <option value="rating">Top Rated (Descending)</option>
+              <option value="discount">Biggest Savings</option>
+              <option value="title-asc">Alphabetical A-Z</option>
+            </select>
+          </div>
+
+          <!-- Advanced toggle -->
+          <button id="filter-toggle-btn" class="action-btn">
+            <i data-lucide="sliders-horizontal"></i>
+            <span>Filters</span>
+            <span id="active-filter-indicator" class="filter-dot hidden">!</span>
+          </button>
+
+          <!-- Quick Reset -->
+          <button id="quick-reset-btn" class="action-btn btn-danger hidden" title="Reset all specifications">
+            <i data-lucide="rotate-ccw"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Advanced Drawer filter sliders panel -->
+      <div id="advanced-drawer" class="advanced-drawer hidden">
+        <div class="advanced-grid">
+          <!-- Price filter panel -->
+          <div class="filter-col">
+            <div class="label-row">
+              <span class="col-title font-semibold">Price Range Slider</span>
+              <span class="font-mono text-accent" id="price-range-label">$0 - $2000</span>
+            </div>
+            <div class="slider-inputs">
+              <input type="range" id="min-price-slider" min="0" max="2000" value="0">
+              <input type="range" id="max-price-slider" min="0" max="2000" value="2000">
+            </div>
+          </div>
+
+          <!-- Rating filter panel -->
+          <div class="filter-col">
+            <span class="col-title font-semibold">Minimum Rating Stars</span>
+            <div id="rating-filter-row" class="rating-buttons">
+              <button class="rating-btn active" data-rating="0">All Stars</button>
+              <button class="rating-btn" data-rating="2">2★+</button>
+              <button class="rating-btn" data-rating="3">3★+</button>
+              <button class="rating-btn" data-rating="4">4★+</button>
+              <button class="rating-btn" data-rating="4.5">4.5★+</button>
+            </div>
+          </div>
+
+          <!-- Low stock only trigger checkbox -->
+          <div class="filter-col checkbox-col">
+            <label class="checkbox-label">
+              <input type="checkbox" id="low-stock-checkbox">
+              <span class="checkbox-box"></span>
+              <span class="font-semibold text-primary">Low stock warnings only</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Status alerts indicators -->
+      <div class="active-status-bar">
+        <span>Active filter query results:</span>
+        <span id="results-count-badge" class="font-mono results-badge">0 displayed</span>
+        <button id="clear-active-filters-link" class="clear-link hidden">Clear active specifications</button>
+      </div>
+
+      <!-- Loader Layout Sheet -->
+      <div id="loading-state" class="state-container">
+        <div class="loader-ripple"></div>
+        <p class="font-semibold text-primary mt-4">Connecting to core index servers...</p>
+        <p class="text-secondary text-sm mt-1">Please wait while the remote products ledger compiles.</p>
+      </div>
+
+      <!-- Error boundary alert panel -->
+      <div id="error-state" class="state-container hidden">
+        <div class="error-circle">
+          <i data-lucide="wifi-off"></i>
+        </div>
+        <h3 class="font-semibold text-primary text-base">Record Fetch Exception</h3>
+        <p id="error-message-text" class="text-secondary text-sm leading-relaxed max-w-sm mt-1"></p>
+        <button id="retry-fetch-btn" class="btn btn-primary mt-6">
+          <i data-lucide="refresh-cw"></i>
+          <span>Retry Connection</span>
+        </button>
+      </div>
+
+      <!-- Product Catalog dynamic Grid items container -->
+      <div id="product-grid" class="product-grid hidden">
+        <!-- Dyamic product cards will render here -->
+      </div>
+
+      <!-- No products found empty catalog fallback state -->
+      <div id="empty-state" class="state-container hidden">
+        <i data-lucide="compass" class="empty-icon text-secondary"></i>
+        <h3 class="font-semibold text-primary text-sm">No items matching criteria</h3>
+        <p class="text-secondary text-sm max-w-xs mt-1">Adjust your search strings, sliders, or select another
+          categories listing on the sidebar navigation.</p>
+        <button id="reset-empty-btn" class="btn btn-primary mt-4">Reset Controls</button>
+      </div>
+
+      <!-- Sticky page status bottom footer -->
+      <footer class="app-main-footer">
+        <div class="footer-status">
+          <span class="status-marker animate-pulse"></span>
+          <span>Operational Base Systems Online</span>
+        </div>
+        <div>Designed by <a href="https://webkingif.github.io/webkingifportfolio">Webkingif</a></div>
+        <span>Refined Layout utilizing clean modern parameters</span>
+      </footer>
+
+    </main>
+  </div>
+
+  <!-- Dynamic Detail Modal Dialog specs -->
+  <div id="detail-modal" class="modal-overlay hidden">
+    <div class="modal-card">
+      <button id="modal-close-btn" class="modal-close-pin" title="Dismiss spec details">
+        <i data-lucide="x"></i>
+      </button>
+
+      <div class="modal-scroll-body">
+        <div class="modal-layout-main">
+
+          <div class="modal-media">
+            <span id="modal-discount-tag" class="modal-discount-tag hidden">Save 0%</span>
+            <span id="modal-category-tag" class="modal-category-tag uppercase">Category</span>
+            <img id="modal-image" src="" alt="Thumbnail" referrerPolicy="no-referrer">
+          </div>
+
+          <div class="modal-details text-xs">
+            <span id="modal-brand"
+              class="font-mono tracking-widest text-secondary uppercase font-bold text-[10px]">Brand</span>
+            <h3 id="modal-title" class="font-sans font-bold text-lg text-primary">Product Title</h3>
+
+            <div class="rating-stock-row select-none">
+              <span class="modal-star-pill">
+                <i data-lucide="star"></i>
+                <span id="modal-rating" class="font-mono font-bold">5.0</span>
+              </span>
+              <span id="modal-stock-badge" class="font-mono text-[10px] font-bold">Status</span>
+            </div>
+
+            <div class="modal-price-box">
+              <span id="modal-price" class="text-xl font-bold font-sans text-primary">$0.00</span>
+              <span id="modal-original-price" class="text-cool-steel text-sm line-through hidden">$0.00</span>
+              <p class="sku-checksum font-mono mt-1 text-secondary text-[10px]">SKU: <span id="modal-sku"
+                  class="font-semibold text-primary"></span></p>
+            </div>
+
+            <p id="modal-description" class="modal-description leading-relaxed text-secondary select-text">Description
+            </p>
+          </div>
+
+        </div>
+
+        <div class="tech-specs-grid" id="specs-row">
+          <div class="spec-card">
+            <i data-lucide="package" class="text-accent"></i>
+            <span class="spec-title">Box Size</span>
+            <span id="spec-dimensions" class="font-sans font-bold text-primary max-w-full text-[11px] truncate">10 x 10
+              x 10 cm</span>
+          </div>
+          <div class="spec-card">
+            <i data-lucide="shield-check" class="text-accent"></i>
+            <span class="spec-title">Warranty</span>
+            <span id="spec-warranty" class="font-sans font-bold text-primary max-w-full text-[11px] truncate">1 Year
+              Standard</span>
+          </div>
+          <div class="spec-card">
+            <i data-lucide="truck" class="text-accent"></i>
+            <span class="spec-title">Shipping</span>
+            <span id="spec-shipping" class="font-sans font-bold text-primary max-w-full text-[11px] truncate">3-5 Days
+              Speed</span>
+          </div>
+          <div class="spec-card">
+            <i data-lucide="rotate-ccw" class="text-accent"></i>
+            <span class="spec-title">Returns</span>
+            <span id="spec-returns" class="font-sans font-bold text-primary max-w-full text-[11px] truncate">30-Day
+              Policy</span>
+          </div>
+        </div>
+
+        <div class="modal-feedback">
+          <h4 class="font-sans font-bold text-sm text-primary flex items-center gap-2">
+            <i data-lucide="layers" class="text-secondary"></i>
+            <span>Feedback Ledger</span>
+          </h4>
+          <div class="reviews-list font-sans" id="modal-reviews-container"></div>
+        </div>
+
+      </div>
+
+      <div class="modal-footer">
+        <button id="modal-dismiss-footer-btn" class="btn btn-primary">Acknowledge Specs</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+
+</html>
